@@ -7,12 +7,10 @@ from rest_framework.pagination import PageNumberPagination
 
 from .serializers import (
     CategorySerializer,
-    SmartphoneSerializer,
-    NotebookSerializer,
     CustomerSerializer,
 
 )
-from ..models import Category, Smartphone, Notebook, Customer
+from ..models import Category, Customer
 
 
 class CategoryPagination(PageNumberPagination):
@@ -37,40 +35,6 @@ class CategoryListApiView(ListAPIView):
     serializer_class = CategorySerializer
     pagination_class = CategoryPagination
     queryset = Category.objects.all()
-
-
-class SmartphoneListApiView(ListAPIView):
-    """Список смартфонов в представлении API"""
-
-    serializer_class = SmartphoneSerializer
-    queryset = Smartphone.objects.all()
-    filter_backends = [SearchFilter]
-    search_fields = ['price', 'title']
-
-
-class SmartphoneDetailAPIView(RetrieveAPIView):
-    """Просмотр API сведений о смартфоне"""
-
-    serializer_class = SmartphoneSerializer
-    queryset = Smartphone.objects.all()
-    lookup_field = 'id'
-
-
-class NotebookListApiView(ListAPIView):
-    """Список ноутбуков в представлении API"""
-
-    serializer_class = NotebookSerializer
-    queryset = Notebook.objects.all()
-    filter_backends = [SearchFilter]
-    search_fields = ['price', 'title']
-
-
-class NotebookDetailAPIView(RetrieveAPIView):
-    """Просмотр API сведений о ноутбуке"""
-
-    serializer_class = NotebookSerializer
-    queryset = Notebook.objects.all()
-    lookup_field = 'id'
 
 
 class CustomersListAPIView(ListAPIView):
