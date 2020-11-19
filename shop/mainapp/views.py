@@ -1,3 +1,5 @@
+import decimal
+
 from django.db import transaction
 from django.shortcuts import render
 from django.contrib import messages
@@ -13,7 +15,6 @@ from .utils import recalc_cart
 
 class BaseView(CartMixin, View):
     """Вывод товаров на главную страницу сайта"""
-
     def get(self, request, *args, **kwargs):
         categories = Category.objects.all()
         products = Product.objects.all()
@@ -27,7 +28,6 @@ class BaseView(CartMixin, View):
 
 class ProductDetailView(CartMixin, DetailView):
     """Просмотр сведений о продукте"""
-
     context_object_name = 'product'
     template_name = 'product_detail.html'
     slug_url_kwarg = 'slug'
@@ -39,7 +39,7 @@ class ProductDetailView(CartMixin, DetailView):
 
 
 class CategoryDetailView(CartMixin, DetailView):
-
+    """Вывод категории товаров"""
     model = Category
     queryset = Category.objects.all()
     context_object_name = 'category'
@@ -85,16 +85,22 @@ class DeleteFromCartView(CartMixin, View):
 class ChangeQTYView(CartMixin, View):
     """Изменения колличества конкретного товара в корзине"""
     def post(self, request, *args, **kwargs):
-        product_slug = kwargs.get('slug')
-        product = Product.objects.get(slug=product_slug)
-        cart_product = CartProduct.objects.get(
-            user=self.cart.owner, cart=self.cart, product=product
-        )
-        qty = int(request.POST.get('qty'))
-        cart_product.qty = qty
-        cart_product.save()
-        recalc_cart(self.cart)
-        messages.add_message(request, messages.INFO, "Кол-во успешно изменено")
+        try:
+            product_slug = kwargs.get('slug')
+            product = Product.objects.get(slug=product_slug)
+            cart_product = CartProduct.objects.get(
+                user=self.cart.owner, cart=self.cart, product=product
+            )
+            qty = int(request.POST.get('qty'))
+            cart_product.qty = qty
+            cart_product.save()
+            recalc_cart(self.cart)
+            messages.add_message(request, messages.INFO,
+                                 "Кол-во успешно изменено")
+        except decimal.InvalidOperation:
+            messages.add_message(request, messages.INFO,
+                                 "Не удалось изменить колличество, "
+                                 "по пробуйте число по меньше")
         return HttpResponseRedirect('/cart/')
 
 
