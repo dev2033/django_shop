@@ -1,8 +1,7 @@
 from collections import OrderedDict
 
 from rest_framework.response import Response
-from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 
 from .serializers import (
